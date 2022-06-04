@@ -23,10 +23,12 @@ import enum
 from typing import List
 from unicodedata import category
 
+
 class FisherCategory(enum.Enum):
-   Newbie = 1
-   Amateur = 2
-   Professional = 3
+    Newbie = 1
+    Amateur = 2
+    Professional = 3
+
 
 class Fish():
     name: str
@@ -36,19 +38,20 @@ class Fish():
         self.name = name
         self.weight = weight
 
+
 class Fisher():
-    name:str
+    name: str
     category: FisherCategory
     caughtFish: List[Fish]
 
     def __init__(self, name: str, category: FisherCategory) -> None:
         self.name = name
         self.category = category
-    
-    def getFishCount(self)->int:
+
+    def getFishCount(self) -> int:
         return len(self.caughtFish)
 
-    def getAverageWeight(self)->float:
+    def getAverageWeight(self) -> float:
         count = self.getFishCount()
         if count < 1:
             return 0
@@ -56,23 +59,25 @@ class Fisher():
         weights = self._getWeights()
         return sum(weights) / count
 
-    def getMaxWeight(self)->float:
+    def getMaxWeight(self) -> float:
         return max(self._getWeights())
 
-    def getScore(self)->float:
+    def getScore(self) -> float:
         # score = (fish_biggest_weight*0.3 + fish_average_weight*0.3 + n*0.3)
         return self.getMaxWeight() * 0.3 + self.getAverageWeight() * 0.3 + self.getFishCount() * 0.3
 
-    def printStats(self)->None:
+    def printStats(self) -> None:
         print(f'Fisher: {self.name} - {self.category.name}')
         print(f'Caught fish: {self.getFishCount()}')
         print('======================')
         for i in len(self.caughtFish):
-            print(f'{i + 1 }. {self.caughtFish[i].name} - {self.caughtFish[i].weight}kg.')
+            print(
+                f'{i + 1 }. {self.caughtFish[i].name} - {self.caughtFish[i].weight}kg.')
         print('======================\n')
 
-    def _getWeights(self)->List[float]:
+    def _getWeights(self) -> List[float]:
         return [i.weight for i in self.caughtFish]
+
 
 class FisherManagement():
     fishers: List[Fisher]
@@ -80,18 +85,19 @@ class FisherManagement():
     def __init__(self) -> None:
         pass
 
-    def registerFisher(self, name: str, category: str)->Fisher:
+    def registerFisher(self, name: str, category: str) -> Fisher:
         fisher = Fisher(name, FisherCategory[category])
         self.fishers.append(fisher)
 
-    def findWinner(self)->Fisher:
+    def findWinner(self) -> Fisher:
         return
 
-    def findTopFishers(self)->List[Fisher]:
+    def findTopFishers(self) -> List[Fisher]:
         return
 
-    def findMostFrequentFish(self)->List[Fish]:
+    def findMostFrequentFish(self) -> List[Fish]:
         return
+
 
 class DataLoader():
     def __init__(self) -> None:
@@ -101,7 +107,7 @@ class DataLoader():
         with open('data.csv') as f:
             return self.parseData(f.readlines())
 
-    def parseData(self, data: List[str])->List[Fisher]:
+    def parseData(self, data: List[str]) -> List[Fisher]:
         fisher: Fisher = None
         fishers: List[Fisher] = []
         fish: Fish = None
@@ -124,22 +130,20 @@ class DataLoader():
                     return
                 fish = self.createFish(rowItems)
                 fisher.caughtFish.append(fish)
- 
+
         return fishers
-    
-    def createFisher(self, data: List[str])->Fisher:
+
+    def createFisher(self, data: List[str]) -> Fisher:
         pass
 
-    def createFish(self, data: List[str])->Fish:
+    def createFish(self, data: List[str]) -> Fish:
         pass
 
 
 class Tournament(FisherManagement, DataLoader):
-    
+
     def __init__(self) -> None:
         super()
-
-
 
 
 def main() -> None:
@@ -150,8 +154,11 @@ def main() -> None:
 ''')
     # fisher = Fisher('Artur', FisherCategory.Amateur)
     # print(f'fisher.category: ', fisher.category)
-    data = DataLoader().loadDataFile()
+    tournament = Tournament()
+    tournament.loadDataFile()
+
     print('Done')
+
 
 if __name__ == '__main__':
     main()
