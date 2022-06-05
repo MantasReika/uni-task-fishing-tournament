@@ -16,8 +16,23 @@ class Tournament(FisherManagement, DataLoader):
             fisher.printStats()
 
     def results(self) -> None:
-        for fisher in self.fishers:
-            pass
+        print('''\n\n
+============================
+--------  Results  ---------
+============================
+''')
+        winner = self.findWinner()
+        if (winner != None):
+            print(
+                f'Winner: {winner.name}({winner.category.name}) - {winner.getScore():.2f}')
+
+        top = self.findTopFishers()
+        print('Top fishers:')
+        for i in range(len(top)):
+            print(
+                f'{i+1}. {top[i].name}({top[i].category.name}) - {top[i].getScore():.2f}')
+        freq = self.findMostFrequentFish()
+        print('')
 
     def start(self) -> None:
         while (True):

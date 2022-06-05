@@ -24,10 +24,19 @@ class FisherManagement():
             print('Could not add a fish, check data and try again...')
 
     def findWinner(self) -> Fisher:
-        return
+        # winner: Fisher = None
+        return max(self.fishers, key=lambda x: x.getScore())
+        # for i in self.fishers:
+        #     if (winner == None):
+        #         winner = i
+        #     elif (winner.getScore() < i.getScore()):
+        #         winner = i
+        # return winner
 
     def findTopFishers(self) -> List[Fisher]:
-        return
+        return sorted(self.fishers, key=lambda x: x.getScore(), reverse=True)
 
-    def findMostFrequentFish(self) -> List[Fish]:
-        return
+    def findMostFrequentFish(self) -> str:
+        fishes = sorted([
+            fish.name for fisher in self.fishers for fish in fisher.caughtFish])
+        return max(set(fishes), key=fishes.count)

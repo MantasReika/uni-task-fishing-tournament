@@ -37,11 +37,20 @@ class Fisher():
     def printStats(self) -> None:
         print(f'Fisher: {self.name} - {self.category.name}')
         print(f'Caught fish: {self.getFishCount()}')
+        print(f'Average weight: {self.getAverageWeight():.2f}kg.')
+        largestFish = self._getLargestFish()
+        print(
+            f'Largest fish: {largestFish.name} - {largestFish.weight:.2f}kg.')
+        print(f'Score: {self.getScore():.2f}')
         print('======================')
-        for i in range(len(self.caughtFish)):
+        for i in range(self.getFishCount()):
             print(
-                f'{i + 1 }. {self.caughtFish[i].name} - {self.caughtFish[i].weight}kg.')
+                f'{i + 1 }. {self.caughtFish[i].name} - {self.caughtFish[i].weight:.2f}kg.')
         print('======================\n')
 
     def _getWeights(self) -> List[float]:
         return [i.weight for i in self.caughtFish]
+
+    def _getLargestFish(self) -> Fish:
+        idx = self._getWeights().index(self.getMaxWeight())
+        return self.caughtFish[idx]
