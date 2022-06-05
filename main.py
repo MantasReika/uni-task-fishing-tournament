@@ -1,13 +1,13 @@
 '''
 Task for you:
 
-There's a fishing tournament taking place in the city. In the tournament, there will be a total of (m) fishers. 
+There's a fishing tournament taking place in the city. In the tournament, there will be a total of (m) fishers.
 Each fisher has a name (fisher_name), and is one of the three categories (fisher_category) : newbie, amateur, professional.
 
-After the tournament has concluded, each fisher announces the amount of fish he has caught No, the names of each fish (fish_name), 
+After the tournament has concluded, each fisher announces the amount of fish he has caught No, the names of each fish (fish_name),
 and their respective weight (fish_weight).
 
-The system must find the average weight of the fishes (fish_average_weight) for each of the fishermen, 
+The system must find the average weight of the fishes (fish_average_weight) for each of the fishermen,
 and also determine the biggest fish each fisherman has caught by weight (fish_biggest_weight).
 
 Lastly the system must determine the winner by following this score formula: score = (fish_biggest_weight*0.3 + fish_average_weight*0.3 + n*0.3).
@@ -21,14 +21,15 @@ Lastly the system must determine the winner by following this score formula: sco
 
 import enum
 from typing import List
-from unicodedata import category
-import copy
 
 
 class FisherCategory(enum.Enum):
     Newbie = 1
     Amateur = 2
     Professional = 3
+
+    def getCategories() -> List[str]:
+        return [e.name for e in FisherCategory]
 
 
 class Fish():
@@ -43,7 +44,7 @@ class Fish():
 class Fisher():
     name: str
     category: FisherCategory
-    caughtFish: List[Fish] = []
+    caughtFish: List[Fish]
 
     def __init__(self, name: str, category: FisherCategory) -> None:
         self.name = name
@@ -75,7 +76,7 @@ class Fisher():
         print(f'Fisher: {self.name} - {self.category.name}')
         print(f'Caught fish: {self.getFishCount()}')
         print('======================')
-        for i in len(self.caughtFish):
+        for i in range(len(self.caughtFish)):
             print(
                 f'{i + 1 }. {self.caughtFish[i].name} - {self.caughtFish[i].weight}kg.')
         print('======================\n')
@@ -88,11 +89,18 @@ class FisherManagement():
     fishers: List[Fisher]
 
     def __init__(self) -> None:
+        self.fishers = []
         pass
 
-    def registerFisher(self, name: str, category: str) -> Fisher:
+    def registerFisher(self, name: str, category: str) -> None:
         fisher = Fisher(name, FisherCategory[category])
         self.fishers.append(fisher)
+
+    def registerFish(self, fisherId: int, name: str, weight: float) -> None:
+        try:
+            self.fishers[fisherId].addFish(Fish(name, weight))
+        except:
+            print('Could not add a fish, check data and try again...')
 
     def findWinner(self) -> Fisher:
         return
@@ -134,7 +142,7 @@ class DataLoader():
     def createFisher(self, data: List[str]) -> Fisher:
         try:
             name = data[1]
-            category = data[2]
+            category = FisherCategory[data[2]]
         except:
             raise f'Error: Incorrect fish data: {data}'
 
@@ -152,7 +160,80 @@ class DataLoader():
 class Tournament(FisherManagement, DataLoader):
 
     def __init__(self) -> None:
-        super()
+        super().__init__()
+
+    def loadData(self) -> None:
+        self.fishers = self.loadDataFile()
+
+    def statistics(self) -> None:
+        for fisher in self.fishers:
+            fisher.printStats()
+
+    def results(self) -> None:
+        for fisher in self.fishers:
+            pass
+
+    def start(self) -> None:
+        while (True):
+            self.menu()
+
+    def menu(self) -> None:
+        MENU_OPTIONS = ['Add participant',
+                        'Enter fish data',
+                        'Print statistics',
+                        'Print results']
+
+        print('Select option:')
+        formattedOptions = [
+            f'{i+1}. {MENU_OPTIONS[i]}' for i in range(len(MENU_OPTIONS))]
+        print('\n'.join(formattedOptions))
+
+        try:
+            option = int(input(':> '))
+        except:
+            print('Please enter a number...')
+            return
+
+        if (option == 1):
+            name = input('Enter name: ')
+
+            print('Available categories:')
+            allCategories = FisherCategory.getCategories()
+            print(
+                '\n'.join([f'{i+1}. {allCategories[i]}' for i in range(len(allCategories))]))
+            try:
+                categoryId = int(input('Enter category: '))
+                if (categoryId < 1 or categoryId > len(allCategories)):
+                    raise ''
+            except:
+                print('Incorrect data entered, please try again...')
+                return
+
+            self.registerFisher(name, allCategories[categoryId - 1])
+
+        elif (option == 2):
+            print('Available fishers:')
+            print(
+                '\n'.join([f'{i+1}. {self.fishers[i].name}' for i in range(len(self.fishers))]))
+            try:
+                fisherId = int(input('Enter fishers number: '))
+                if (fisherId < 1 or fisherId > len(self.fishers)):
+                    raise ''
+            except:
+                print('Incorrect data entered, please try again...')
+                return
+
+            name = input('Enter fish name: ')
+            weight = input('Enter fish weight: ')
+            self.registerFish(fisherId - 1, name, weight)
+            pass
+        elif (option == 3):
+            self.statistics()
+
+        elif (option == 4):
+            self.results()
+        else:
+            pass
 
 
 def main() -> None:
@@ -163,7 +244,8 @@ def main() -> None:
 ''')
 
     tournament = Tournament()
-    t = tournament.loadDataFile()
+    tournament.loadData()
+    tournament.start()
 
     print('Done')
 
