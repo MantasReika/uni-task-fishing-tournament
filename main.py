@@ -22,6 +22,7 @@ Lastly the system must determine the winner by following this score formula: sco
 import enum
 from typing import List
 from unicodedata import category
+import copy
 
 
 class FisherCategory(enum.Enum):
@@ -42,11 +43,15 @@ class Fish():
 class Fisher():
     name: str
     category: FisherCategory
-    caughtFish: List[Fish]
+    caughtFish: List[Fish] = []
 
     def __init__(self, name: str, category: FisherCategory) -> None:
         self.name = name
         self.category = category
+        self.caughtFish = []
+
+    def addFish(self, fish: Fish) -> None:
+        self.caughtFish.append(fish)
 
     def getFishCount(self) -> int:
         return len(self.caughtFish)
@@ -108,36 +113,40 @@ class DataLoader():
             return self.parseData(f.readlines())
 
     def parseData(self, data: List[str]) -> List[Fisher]:
-        fisher: Fisher = None
         fishers: List[Fisher] = []
-        fish: Fish = None
+        fisherCount = -1
 
         for row in data:
-            rowItems = row.split('|')
-            if (len(rowItems) == 0 and fisher != None):
-                fishers.append(fisher)
-                fisher = None
-                continue
+            rowItems = row.strip('\n').split('|')
 
             if (len(rowItems) != 3):
                 # Incorrect amount of data
                 continue
 
             if (rowItems[0] == 'FISHER'):
-                fisher = self.createFisher(rowItems)
+                fisherCount += 1
+                fishers.append(self.createFisher(rowItems))
             elif (rowItems[0] == 'FISH'):
-                if (fisher == None):
-                    return
-                fish = self.createFish(rowItems)
-                fisher.caughtFish.append(fish)
+                fishers[fisherCount].addFish(self.createFish(rowItems))
 
         return fishers
 
     def createFisher(self, data: List[str]) -> Fisher:
-        pass
+        try:
+            name = data[1]
+            category = data[2]
+        except:
+            raise f'Error: Incorrect fish data: {data}'
+
+        return Fisher(name, category)
 
     def createFish(self, data: List[str]) -> Fish:
-        pass
+        try:
+            name = data[1]
+            weight = float(data[2])
+        except:
+            raise f'Error: Incorrect fish data: {data}'
+        return Fish(name, weight)
 
 
 class Tournament(FisherManagement, DataLoader):
@@ -152,10 +161,9 @@ def main() -> None:
 ###### Fishing tournament #####
 ###############################
 ''')
-    # fisher = Fisher('Artur', FisherCategory.Amateur)
-    # print(f'fisher.category: ', fisher.category)
+
     tournament = Tournament()
-    tournament.loadDataFile()
+    t = tournament.loadDataFile()
 
     print('Done')
 
