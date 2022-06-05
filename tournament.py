@@ -80,12 +80,12 @@ class Tournament(FisherManagement, DataLoader):
                 fisherId = int(input('Enter fishers number: '))
                 if (fisherId < 1 or fisherId > len(self.fishers)):
                     raise ''
+                name = input('Enter fish name: ')
+                weight = float(input('Enter fish weight: '))
             except:
                 print('Incorrect data entered, please try again...')
                 return
 
-            name = input('Enter fish name: ')
-            weight = input('Enter fish weight: ')
             self.registerFish(fisherId - 1, name, weight)
             pass
         elif (option == 3):
